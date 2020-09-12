@@ -1,13 +1,29 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Tile from "./Tile";
 
-const Field = () => {
-  const grid: Array<number> = Array(9).fill(null);
+interface InputProps {
+  gridSize: number;
+}
+
+export interface TileProps {
+  value: "GRASS" | "START" | "END" | "OBSTACLE";
+}
+
+const Field = ({ gridSize }: InputProps) => {
+  // initial state
+  const [grid, setGrid] = useState(Array(Math.pow(gridSize, 2)).fill("GRASS"));
+  // udpating when we get new props
+  useEffect(() => {
+    setGrid(Array(Math.pow(gridSize, 2)).fill("GRASS"));
+  }, [gridSize]);
+
   return (
     <div className="wrapper">
-      <div className="header">Field</div>
-      {grid.map((tile) => (
-        <Tile />
+      <div className="header">
+        Field Size: {gridSize}x{gridSize}
+      </div>
+      {grid.map((tile: TileProps, index) => (
+        <Tile tile={tile} key={index} />
       ))}
     </div>
   );
