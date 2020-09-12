@@ -3,10 +3,15 @@ import { TileProps } from "./Field";
 
 interface InputProps {
   tile: TileProps;
+  click: Function;
 }
 
-const Tile = ({ tile }: InputProps) => {
-  return <div className="tile">{tile}</div>;
-};
+const Tile = React.memo(({ tile, click }: InputProps) => {
+  return (
+    <div style={{ padding: "5px" }} className="tile" onClick={() => click()}>
+      {TileProps[tile]}
+    </div>
+  );
+});
 
 export default Tile;
