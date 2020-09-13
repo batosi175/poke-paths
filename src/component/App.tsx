@@ -22,7 +22,6 @@ const App = () => {
         onChange={(e) => memoizedSetInput(e.target.value)}
       />
 
-      <header>Hello World!</header>
       <Field gridSize={input} />
 
       <button>Submit</button>

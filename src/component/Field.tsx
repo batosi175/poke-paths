@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Tile from "./Tile";
+import { useCountRenders } from "../hooks/useCountRenders";
 
 interface InputProps {
   gridSize: number;
@@ -27,16 +28,16 @@ const rowStyle = {
   display: "flex",
 };
 
-export interface PropsFunction {
-  setGrid: () => void;
-}
-
 const Field = ({ gridSize }: InputProps) => {
+  useCountRenders("Field");
+
   // initial state
   const [grid, setGrid] = useState<TileProps[][]>(() => initalState(gridSize));
 
   // udpating when we get new props
   useEffect(() => {
+    // console.log("effect getting called");
+
     setGrid(Array(gridSize).fill(Array(gridSize).fill(TileProps.GRASS)));
   }, [gridSize]);
 
