@@ -1,14 +1,48 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import "./App.css";
 import Field from "./Field";
 
+export enum TileProps {
+  "GRASS",
+  "OBSTACLE",
+  "START",
+  "END",
+}
+
+const initialGridState = (size: number): TileProps[][] => {
+  const state = Array(size).fill(Array(size).fill(TileProps.GRASS));
+  return state;
+};
+
 const App = () => {
-  const [input, setInput] = useState(3);
-  const memoizedSetInput = useCallback(
+  const [gridSize, setGridSize] = useState(3); // what we get from the input
+  const memoizedSetGridSize = useCallback(
+    // more efficient way of handling this
     (gridSize: string) => {
-      setInput(parseInt(gridSize));
+      setGridSize(parseInt(gridSize));
     },
-    [setInput]
+    [setGridSize]
+  );
+
+  // grid that goes to the field for renders
+  const [grid, setGrid] = useState<TileProps[][]>(() =>
+    initialGridState(gridSize)
+  );
+
+  useEffect(() => {
+    // console.log("effect getting called");
+    setGrid(Array(gridSize).fill(Array(gridSize).fill(TileProps.GRASS)));
+  }, [gridSize]);
+
+  const memoizedHandleTileClick = useCallback(
+    (xPosition: number, yPosition: number) => {
+      const gridCopy: TileProps[][] = JSON.parse(JSON.stringify(grid));
+      const enumLength: number = Object.keys(TileProps).length / 2;
+      gridCopy[xPosition][yPosition] =
+        (gridCopy[xPosition][yPosition] + 1) % enumLength;
+      setGrid(gridCopy);
+    },
+    [grid, setGrid]
   );
 
   return (
@@ -17,13 +51,12 @@ const App = () => {
         type="number"
         name="gridSizeInput"
         id="gridSizeInput"
-        value={input}
+        value={gridSize}
         min={2}
-        onChange={(e) => memoizedSetInput(e.target.value)}
+        onChange={(e) => memoizedSetGridSize(e.target.value)}
       />
 
-      <Field gridSize={input} />
-
+      <Field grid={grid} click={memoizedHandleTileClick} />
       <button>Submit</button>
     </div>
   );

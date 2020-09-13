@@ -1,5 +1,5 @@
-import React from "react";
-import { TileProps } from "./Field";
+import React, { memo } from "react";
+import { TileProps } from "./App";
 const bulbasaur = "bulbasaur.png";
 const finishTile = "finishtile.png";
 const grassTile = "grasstile.png";
@@ -23,7 +23,7 @@ const getImage = (tile: TileProps) => {
   }
 };
 
-const Tile = React.memo(({ tile, click }: InputProps) => {
+const Tile = memo(({ tile, click }: InputProps) => {
   return (
     <div style={{ padding: "5px" }} className="tile" onClick={() => click()}>
       <img src={getImage(tile)} alt="" />
