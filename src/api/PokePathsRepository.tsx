@@ -7,11 +7,11 @@ const headers = {
 };
 
 export const fetchPath = async (postBody: PokePathPostBody) => {
-  const result = await fetch(url, {
+  const results = await fetch(url, {
     method: "POST",
     headers,
     body: JSON.stringify(postBody),
   });
 
-  return result.json();
+  return results.json();
 };

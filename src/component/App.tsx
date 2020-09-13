@@ -15,20 +15,20 @@ export interface TileProps {
   isPath: boolean;
 }
 
-enum MoveEnum {
+export enum MoveEnum {
   "D",
   "U",
   "R",
   "L",
 }
 
-export interface ServerResponse {
-  moves: MoveEnum[];
+export interface ServerPathResponse {
+  moves: string[];
 }
 
 export interface Coordinate {
-  x?: number;
-  y?: number;
+  x: number;
+  y: number;
 }
 export interface PokePathPostBody {
   sideLength: number;
@@ -47,10 +47,11 @@ const createPostBody = (
   field: TileProps[][],
   sideLength: number
 ): PokePathPostBody => {
-  console.log(field);
+  // console.log(field);
   let impassables: Coordinate[] = [];
-  let startingLoc: Coordinate = {};
-  let endingLoc: Coordinate = {};
+  // TODO: Do soemthign about this
+  let startingLoc: Coordinate = { x: 0, y: 0 };
+  let endingLoc: Coordinate = { x: 0, y: 0 };
   field.forEach((row, y) => {
     row.forEach((col, x) => {
       switch (col.value) {
@@ -113,9 +114,37 @@ const App = () => {
 
   const handleSubmit = async () => {
     const postBody = createPostBody(grid, gridSize);
-    console.log(postBody);
-    const results: ServerResponse = await fetchPath(postBody);
-    console.log(results);
+    // console.log(postBody);
+    const results: ServerPathResponse = await fetchPath(postBody);
+    console.log(results.moves);
+    // we need to take the grid and apply the update.
+    const position = { ...postBody.startingLoc };
+    const gridCopy: TileProps[][] = JSON.parse(JSON.stringify(grid));
+    gridCopy[position.x][position.y].isPath = true;
+    results.moves.forEach((move: string) => {
+      console.log(move);
+      switch (move) {
+        case MoveEnum[MoveEnum.U]:
+          position.y--;
+          break;
+        case MoveEnum[MoveEnum.D]:
+          console.log("here");
+
+          position.y++;
+          break;
+        case MoveEnum[MoveEnum.L]:
+          position.x--;
+          break;
+        case MoveEnum[MoveEnum.R]:
+          position.x++;
+          break;
+      }
+      console.log(position);
+
+      gridCopy[position.x][position.y].isPath = true;
+    });
+    console.log(gridCopy);
+    setGrid(gridCopy);
   };
 
   return (
