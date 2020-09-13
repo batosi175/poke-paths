@@ -1,12 +1,12 @@
 import React, { memo } from "react";
-import { TileEnum } from "./App";
+import { TileEnum, TileProps } from "./App";
 const bulbasaur = "bulbasaur.png";
 const finishTile = "finishtile.png";
 const grassTile = "grasstile.png";
 const rockTile = "rocktile.png";
 
 interface InputProps {
-  tile: TileEnum;
+  tile: TileProps;
   click: Function;
 }
 
@@ -26,7 +26,7 @@ const getImage = (tile: TileEnum) => {
 const Tile = memo(({ tile, click }: InputProps) => {
   return (
     <div style={{ padding: "5px" }} className="tile" onClick={() => click()}>
-      <img src={getImage(tile)} alt="" />
+      <img src={getImage(tile.value)} alt="" />
     </div>
   );
 });

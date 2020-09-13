@@ -10,6 +10,11 @@ export enum TileEnum {
   "END",
 }
 
+export interface TileProps {
+  value: TileEnum;
+  isPath: boolean;
+}
+
 enum MoveEnum {
   "D",
   "U",
@@ -32,13 +37,14 @@ export interface PokePathPostBody {
   endingLoc: Coordinate;
 }
 
-const initialGridState = (size: number): TileEnum[][] => {
-  const state = Array(size).fill(Array(size).fill(TileEnum.GRASS));
-  return state;
+const initialGridState = (size: number): TileProps[][] => {
+  return Array(size).fill(
+    Array(size).fill({ value: TileEnum.GRASS, isPath: false })
+  );
 };
 
 const createPostBody = (
-  field: TileEnum[][],
+  field: TileProps[][],
   sideLength: number
 ): PokePathPostBody => {
   console.log(field);
@@ -47,7 +53,7 @@ const createPostBody = (
   let endingLoc: Coordinate = {};
   field.forEach((row, y) => {
     row.forEach((col, x) => {
-      switch (col) {
+      switch (col.value) {
         case TileEnum.START:
           startingLoc = { x, y };
           break;
@@ -79,22 +85,26 @@ const App = () => {
   );
 
   // grid that goes to the field for renders
-  const [grid, setGrid] = useState<TileEnum[][]>(() =>
+  const [grid, setGrid] = useState<TileProps[][]>(() =>
     initialGridState(gridSize)
   );
 
   useEffect(() => {
     // console.log("effect getting called");
-    setGrid(Array(gridSize).fill(Array(gridSize).fill(TileEnum.GRASS)));
+    setGrid(initialGridState(gridSize));
   }, [gridSize]);
 
   const memoizedHandleTileClick = useCallback(
     (xPosition: number, yPosition: number) => {
       setGrid((originalGrid) => {
-        const gridCopy: TileEnum[][] = JSON.parse(JSON.stringify(originalGrid));
+        const gridCopy: TileProps[][] = JSON.parse(
+          JSON.stringify(originalGrid)
+        );
         const enumLength: number = Object.keys(TileEnum).length / 2;
-        gridCopy[xPosition][yPosition] =
-          (gridCopy[xPosition][yPosition] + 1) % enumLength;
+        const currentTile: TileProps = gridCopy[xPosition][yPosition];
+        gridCopy[xPosition][yPosition] = Object.assign(currentTile, {
+          value: (currentTile.value + 1) % enumLength,
+        });
         return gridCopy;
       });
     },

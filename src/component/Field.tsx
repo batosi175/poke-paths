@@ -1,10 +1,10 @@
 import React, { memo } from "react";
 import Tile from "./Tile";
 import { useCountRenders } from "../hooks/useCountRenders";
-import { TileEnum } from "./App";
+import { TileProps } from "./App";
 
 interface InputProps {
-  grid: TileEnum[][];
+  grid: TileProps[][];
   click: Function;
 }
 
@@ -23,10 +23,10 @@ const Field = memo(({ grid, click }: InputProps) => {
   return (
     <div className="wrapper">
       <div style={fieldStyle} className="field">
-        {grid.map((row: TileEnum[], xPos) => {
+        {grid.map((row: TileProps[], xPos) => {
           return (
             <div style={rowStyle} className="row" key={xPos}>
-              {row.map((col: TileEnum, yPos) => {
+              {row.map((col: TileProps, yPos) => {
                 return (
                   <Tile
                     tile={col}
