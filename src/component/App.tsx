@@ -116,20 +116,16 @@ const App = () => {
     const postBody = createPostBody(grid, gridSize);
     // console.log(postBody);
     const results: ServerPathResponse = await fetchPath(postBody);
-    console.log(results.moves);
     // we need to take the grid and apply the update.
     const position = { ...postBody.startingLoc };
     const gridCopy: TileProps[][] = JSON.parse(JSON.stringify(grid));
-    gridCopy[position.x][position.y].isPath = true;
+    gridCopy[position.y][position.x].isPath = true;
     results.moves.forEach((move: string) => {
-      console.log(move);
       switch (move) {
         case MoveEnum[MoveEnum.U]:
           position.y--;
           break;
         case MoveEnum[MoveEnum.D]:
-          console.log("here");
-
           position.y++;
           break;
         case MoveEnum[MoveEnum.L]:
@@ -139,11 +135,9 @@ const App = () => {
           position.x++;
           break;
       }
-      console.log(position);
 
-      gridCopy[position.x][position.y].isPath = true;
+      gridCopy[position.y][position.x].isPath = true;
     });
-    console.log(gridCopy);
     setGrid(gridCopy);
   };
 
