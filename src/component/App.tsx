@@ -101,6 +101,11 @@ const App = () => {
         const gridCopy: TileProps[][] = JSON.parse(
           JSON.stringify(originalGrid)
         );
+        gridCopy.forEach((row) => {
+          row.forEach((col) => {
+            col.isPath = false;
+          });
+        });
         const enumLength: number = Object.keys(TileEnum).length / 2;
         const currentTile: TileProps = gridCopy[xPosition][yPosition];
         gridCopy[xPosition][yPosition] = Object.assign(currentTile, {
