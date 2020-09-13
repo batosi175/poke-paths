@@ -3,14 +3,14 @@ import "./App.css";
 import Field from "./Field";
 import { fetchPath } from "../api/PokePathsRepository";
 
-export enum TileProps {
+export enum TileEnum {
   "GRASS",
   "OBSTACLE",
   "START",
   "END",
 }
 
-enum Moves {
+enum MoveEnum {
   "D",
   "U",
   "R",
@@ -18,7 +18,7 @@ enum Moves {
 }
 
 export interface ServerResponse {
-  moves: Moves[];
+  moves: MoveEnum[];
 }
 
 export interface Coordinate {
@@ -32,13 +32,13 @@ export interface PokePathPostBody {
   endingLoc: Coordinate;
 }
 
-const initialGridState = (size: number): TileProps[][] => {
-  const state = Array(size).fill(Array(size).fill(TileProps.GRASS));
+const initialGridState = (size: number): TileEnum[][] => {
+  const state = Array(size).fill(Array(size).fill(TileEnum.GRASS));
   return state;
 };
 
 const createPostBody = (
-  field: TileProps[][],
+  field: TileEnum[][],
   sideLength: number
 ): PokePathPostBody => {
   console.log(field);
@@ -48,13 +48,13 @@ const createPostBody = (
   field.forEach((row, y) => {
     row.forEach((col, x) => {
       switch (col) {
-        case TileProps.START:
+        case TileEnum.START:
           startingLoc = { x, y };
           break;
-        case TileProps.END:
+        case TileEnum.END:
           endingLoc = { x, y };
           break;
-        case TileProps.OBSTACLE:
+        case TileEnum.OBSTACLE:
           impassables.push({ x, y });
           break;
       }
@@ -79,22 +79,20 @@ const App = () => {
   );
 
   // grid that goes to the field for renders
-  const [grid, setGrid] = useState<TileProps[][]>(() =>
+  const [grid, setGrid] = useState<TileEnum[][]>(() =>
     initialGridState(gridSize)
   );
 
   useEffect(() => {
     // console.log("effect getting called");
-    setGrid(Array(gridSize).fill(Array(gridSize).fill(TileProps.GRASS)));
+    setGrid(Array(gridSize).fill(Array(gridSize).fill(TileEnum.GRASS)));
   }, [gridSize]);
 
   const memoizedHandleTileClick = useCallback(
     (xPosition: number, yPosition: number) => {
       setGrid((originalGrid) => {
-        const gridCopy: TileProps[][] = JSON.parse(
-          JSON.stringify(originalGrid)
-        );
-        const enumLength: number = Object.keys(TileProps).length / 2;
+        const gridCopy: TileEnum[][] = JSON.parse(JSON.stringify(originalGrid));
+        const enumLength: number = Object.keys(TileEnum).length / 2;
         gridCopy[xPosition][yPosition] =
           (gridCopy[xPosition][yPosition] + 1) % enumLength;
         return gridCopy;

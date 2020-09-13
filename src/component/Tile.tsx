@@ -1,24 +1,24 @@
 import React, { memo } from "react";
-import { TileProps } from "./App";
+import { TileEnum } from "./App";
 const bulbasaur = "bulbasaur.png";
 const finishTile = "finishtile.png";
 const grassTile = "grasstile.png";
 const rockTile = "rocktile.png";
 
 interface InputProps {
-  tile: TileProps;
+  tile: TileEnum;
   click: Function;
 }
 
-const getImage = (tile: TileProps) => {
+const getImage = (tile: TileEnum) => {
   switch (tile) {
-    case TileProps.GRASS:
+    case TileEnum.GRASS:
       return process.env.PUBLIC_URL + grassTile;
-    case TileProps.START:
+    case TileEnum.START:
       return process.env.PUBLIC_URL + bulbasaur;
-    case TileProps.END:
+    case TileEnum.END:
       return process.env.PUBLIC_URL + finishTile;
-    case TileProps.OBSTACLE:
+    case TileEnum.OBSTACLE:
       return process.env.PUBLIC_URL + rockTile;
   }
 };
