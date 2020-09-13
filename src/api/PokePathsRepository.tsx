@@ -1,4 +1,8 @@
-import { PokePathPostBody } from "../component/App";
+import {
+  PokePathPostBody,
+  ServerPathResponse,
+  ErrorResponse,
+} from "../component/App";
 
 const url = "https://frozen-reef-96768.herokuapp.com/find-path";
 
@@ -6,12 +10,15 @@ const headers = {
   "Content-Type": "application/json",
 };
 
-export const fetchPath = async (postBody: PokePathPostBody) => {
-  const results = await fetch(url, {
+type ResponseOptions = ServerPathResponse | ErrorResponse;
+
+export const fetchPath = async (
+  postBody: PokePathPostBody
+): Promise<ResponseOptions> => {
+  const response = await fetch(url, {
     method: "POST",
     headers,
     body: JSON.stringify(postBody),
   });
-
-  return results.json();
+  return response.json();
 };

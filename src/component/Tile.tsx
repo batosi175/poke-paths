@@ -28,7 +28,10 @@ const Tile = memo(({ tile, click }: InputProps) => {
     <img
       src={getImage(tile.value)}
       alt={TileEnum[tile.value]}
-      style={{ border: tile.isPath ? "solid 5px yellow" : "solid 5px black" }}
+      style={{
+        border: tile.isPath ? "solid 5px yellow" : "solid 5px black",
+        backgroundColor: TileEnum[tile.value] === "START" ? "green" : "",
+      }}
       className="tile"
       onClick={() => click()}
     />

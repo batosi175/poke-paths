@@ -26,6 +26,10 @@ export interface ServerPathResponse {
   moves: string[];
 }
 
+export interface ErrorResponse {
+  message: string;
+}
+
 export interface Coordinate {
   x: number;
   y: number;
@@ -119,31 +123,39 @@ const App = () => {
 
   const handleSubmit = async () => {
     const postBody = createPostBody(grid, gridSize);
-    // console.log(postBody);
-    const results: ServerPathResponse = await fetchPath(postBody);
-    // we need to take the grid and apply the update.
-    const position = { ...postBody.startingLoc };
-    const gridCopy: TileProps[][] = JSON.parse(JSON.stringify(grid));
-    gridCopy[position.y][position.x].isPath = true;
-    results.moves.forEach((move: string) => {
-      switch (move) {
-        case MoveEnum[MoveEnum.U]:
-          position.y--;
-          break;
-        case MoveEnum[MoveEnum.D]:
-          position.y++;
-          break;
-        case MoveEnum[MoveEnum.L]:
-          position.x--;
-          break;
-        case MoveEnum[MoveEnum.R]:
-          position.x++;
-          break;
-      }
+    const results: ServerPathResponse | ErrorResponse = await fetchPath(
+      postBody
+    );
 
+    const errorResponse = results as ErrorResponse;
+    const successResponse = results as ServerPathResponse;
+
+    if (errorResponse.message) {
+      console.log(errorResponse.message);
+    } else if (successResponse.moves) {
+      const position = { ...postBody.startingLoc };
+      const gridCopy: TileProps[][] = JSON.parse(JSON.stringify(grid));
       gridCopy[position.y][position.x].isPath = true;
-    });
-    setGrid(gridCopy);
+      successResponse.moves.forEach((move: string) => {
+        switch (move) {
+          case MoveEnum[MoveEnum.U]:
+            position.y--;
+            break;
+          case MoveEnum[MoveEnum.D]:
+            position.y++;
+            break;
+          case MoveEnum[MoveEnum.L]:
+            position.x--;
+            break;
+          case MoveEnum[MoveEnum.R]:
+            position.x++;
+            break;
+        }
+
+        gridCopy[position.y][position.x].isPath = true;
+      });
+      setGrid(gridCopy);
+    }
   };
 
   return (
