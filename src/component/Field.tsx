@@ -5,7 +5,6 @@ import { TileProps } from "./App";
 
 interface InputProps {
   grid: TileProps[][];
-  // gridSize: number;
   click: Function;
 }
 
@@ -20,12 +19,9 @@ const rowStyle = {
 };
 
 const Field = memo(({ grid, click }: InputProps) => {
-  useCountRenders("Field");
+  // useCountRenders("Field");
   return (
     <div className="wrapper">
-      {/* <div className="header">
-        Field Size: {gridSize}x{gridSize}
-      </div> */}
       <div style={fieldStyle} className="field">
         {grid.map((row: TileProps[], xPos) => {
           return (
