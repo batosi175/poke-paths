@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import "./App.css";
 import Field from "./Field";
 import { fetchPath } from "../api/PokePathsRepository";
+import { InputWithButton } from "./InputWithButton";
+import { Button } from "@material-ui/core";
+import { ErrorBanner } from "./ErrorBanner";
 
 // enum that manages what the tile values are
 export enum TileEnum {
@@ -150,12 +153,16 @@ const App = () => {
   // reset's the grid whenever the gridsize property is updated and clear's out errors
   useEffect(() => {
     setGrid(initialGridState(gridSize));
-    setErrors([]);
+    clearErrors();
   }, [gridSize]);
+
+  const clearErrors = () => {
+    setErrors([]);
+  };
 
   // when the grid is interacted with, we clear errors and set the grid based on the selection
   const handleTileClick = (xPosition: number, yPosition: number) => {
-    setErrors([]);
+    clearErrors();
     setGrid((originalGrid) => {
       const newGrid: TileProps[][] = resetPath(originalGrid);
       const enumLength: number = Object.keys(TileEnum).length / 2;
@@ -195,25 +202,13 @@ const App = () => {
 
   return (
     <div className="App">
-      <div className="errorList">
-        {errorList.map((error, index) => {
-          return (
-            <div className="errorItem" key={index}>
-              {error}
-            </div>
-          );
-        })}
-      </div>
-      <input
-        type="number"
-        name="gridSizeInput"
-        id="gridSizeInput"
-        value={gridSize}
-        min={2}
-        onChange={(e) => setGridSize(parseInt(e.target.value))}
-      />
+      <InputWithButton setGridSize={setGridSize} />
       <Field grid={grid} click={handleTileClick} />
-      <button onClick={handleSubmit}>Start your adventure</button>
+      <Button onClick={handleSubmit} variant="outlined" color="primary">
+        Start your adventure
+      </Button>
+
+      <ErrorBanner errors={errorList} clearErrors={clearErrors} />
     </div>
   );
 };
