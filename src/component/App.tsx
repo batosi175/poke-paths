@@ -47,6 +47,47 @@ const initialGridState = (size: number): TileProps[][] => {
   );
 };
 
+const copyGrid = (field: TileProps[][]): TileProps[][] => {
+  return JSON.parse(JSON.stringify(field));
+};
+
+const resetPath = (field: TileProps[][]): TileProps[][] => {
+  const fieldCopy = copyGrid(field);
+  fieldCopy.forEach((row) => {
+    row.forEach((col) => {
+      col.isPath = false;
+    });
+  });
+  return fieldCopy;
+};
+
+const applyMoves = (
+  field: TileProps[][],
+  startingPosition: Coordinate,
+  moves: string[]
+): TileProps[][] => {
+  const newField: TileProps[][] = copyGrid(field);
+  newField[startingPosition.y][startingPosition.x].isPath = true;
+  moves.forEach((move: string) => {
+    switch (move) {
+      case MoveEnum[MoveEnum.U]:
+        startingPosition.y--;
+        break;
+      case MoveEnum[MoveEnum.D]:
+        startingPosition.y++;
+        break;
+      case MoveEnum[MoveEnum.L]:
+        startingPosition.x--;
+        break;
+      case MoveEnum[MoveEnum.R]:
+        startingPosition.x++;
+        break;
+    }
+    newField[startingPosition.y][startingPosition.x].isPath = true;
+  });
+  return newField;
+};
+
 const findAllCoordinatesByTileType = (
   field: TileProps[][],
   type: TileEnum
@@ -82,18 +123,8 @@ const handleGridValidation = (grid: TileProps[][]): string[] => {
 };
 
 const App = () => {
-  const [gridSize, setGridSize] = useState(3); // what we get from the input
-  const [errorList, setErrors] = useState([] as string[]); // array of error strings
-
-  const memoizedSetGridSize = useCallback(
-    // more efficient way of handling this
-    (gridSize: string) => {
-      setGridSize(parseInt(gridSize));
-    },
-    [setGridSize]
-  );
-
-  // grid that goes to the field for renders
+  const [gridSize, setGridSize] = useState(3);
+  const [errorList, setErrors] = useState([] as string[]);
   const [grid, setGrid] = useState<TileProps[][]>(() =>
     initialGridState(gridSize)
   );
@@ -107,20 +138,12 @@ const App = () => {
     (xPosition: number, yPosition: number) => {
       setErrors([]);
       setGrid((originalGrid) => {
-        const gridCopy: TileProps[][] = JSON.parse(
-          JSON.stringify(originalGrid)
-        );
-        gridCopy.forEach((row) => {
-          row.forEach((col) => {
-            col.isPath = false;
-          });
-        });
+        const newGrid: TileProps[][] = resetPath(originalGrid);
         const enumLength: number = Object.keys(TileEnum).length / 2;
-        const currentTile: TileProps = gridCopy[xPosition][yPosition];
-        gridCopy[xPosition][yPosition] = Object.assign(currentTile, {
-          value: (currentTile.value + 1) % enumLength,
-        });
-        return gridCopy;
+        const currentTile: TileProps = newGrid[xPosition][yPosition];
+        const tileValue = (currentTile.value + 1) % enumLength;
+        newGrid[xPosition][yPosition].value = tileValue;
+        return newGrid;
       });
     },
     [setGrid, setErrors]
@@ -152,27 +175,7 @@ const App = () => {
     if (errorResponse.message) {
       setErrors([errorResponse.message]);
     } else if (successResponse.moves) {
-      const position = { ...postBody.startingLoc };
-      const gridCopy: TileProps[][] = JSON.parse(JSON.stringify(grid));
-      gridCopy[position.y][position.x].isPath = true;
-      successResponse.moves.forEach((move: string) => {
-        switch (move) {
-          case MoveEnum[MoveEnum.U]:
-            position.y--;
-            break;
-          case MoveEnum[MoveEnum.D]:
-            position.y++;
-            break;
-          case MoveEnum[MoveEnum.L]:
-            position.x--;
-            break;
-          case MoveEnum[MoveEnum.R]:
-            position.x++;
-            break;
-        }
-        gridCopy[position.y][position.x].isPath = true;
-      });
-      setGrid(gridCopy);
+      setGrid(applyMoves(grid, startingLoc, successResponse.moves));
     }
   };
 
@@ -193,7 +196,7 @@ const App = () => {
         id="gridSizeInput"
         value={gridSize}
         min={2}
-        onChange={(e) => memoizedSetGridSize(e.target.value)}
+        onChange={(e) => setGridSize(parseInt(e.target.value))}
       />
       <Field grid={grid} click={memoizedHandleTileClick} />
       <button onClick={handleSubmit}>Start your adventure</button>
