@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
-// import "./App.css";
 import Field from "./Field";
 import { fetchPath } from "../api/PokePathsRepository";
 import { InputWithButton } from "./InputWithButton";
-import { Button, Grid } from "@material-ui/core";
+import { Button, Grid, makeStyles, createStyles } from "@material-ui/core";
 import { ErrorBanner } from "./ErrorBanner";
 
 // enum that manages what the tile values are
@@ -143,7 +142,16 @@ const handleGridValidation = (grid: TileProps[][]): string[] => {
   return messageList;
 };
 
+const useStyles = makeStyles(() =>
+  createStyles({
+    root: {
+      paddingTop: "50px",
+    },
+  })
+);
+
 const App = () => {
+  const classes = useStyles();
   const [gridSize, setGridSize] = useState(3);
   const [errorList, setErrors] = useState([] as string[]);
   const [grid, setGrid] = useState<TileProps[][]>(() =>
@@ -201,7 +209,7 @@ const App = () => {
   };
 
   return (
-    <Grid container>
+    <Grid container className={classes.root} spacing={1}>
       <Grid item xs={12} md={6} container direction="column" justify="center">
         <InputWithButton setGridSize={setGridSize} />
         <Field grid={grid} click={handleTileClick} />

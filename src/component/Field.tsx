@@ -1,6 +1,5 @@
 import React, { memo } from "react";
 import Tile from "./Tile";
-import { useCountRenders } from "../hooks/useCountRenders";
 import { TileProps } from "./App";
 
 interface InputProps {
@@ -19,7 +18,6 @@ const rowStyle = {
 };
 
 const Field = memo(({ grid, click }: InputProps) => {
-  // useCountRenders("Field");
   return (
     <div className="wrapper">
       <div style={fieldStyle} className="field">
