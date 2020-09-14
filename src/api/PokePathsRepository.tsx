@@ -20,5 +20,10 @@ export const fetchPath = async (
     headers,
     body: JSON.stringify(postBody),
   });
+  if (response.status !== 200 && response.status !== 400) {
+    return {
+      message: "There was a server issue, Error code: " + response.status,
+    };
+  }
   return response.json();
 };

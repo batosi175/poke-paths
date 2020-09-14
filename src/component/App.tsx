@@ -3,6 +3,7 @@ import "./App.css";
 import Field from "./Field";
 import { fetchPath } from "../api/PokePathsRepository";
 
+// enum that manages what the tile values are
 export enum TileEnum {
   "GRASS",
   "OBSTACLE",
@@ -10,11 +11,13 @@ export enum TileEnum {
   "END",
 }
 
+// The props that are sent down to the grid and the tile component is array indexed starting from top left to bottom right. ie [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
 export interface TileProps {
   value: TileEnum;
   isPath: boolean;
 }
 
+// possible moves that come from the server
 export enum MoveEnum {
   "D",
   "U",
@@ -22,10 +25,12 @@ export enum MoveEnum {
   "L",
 }
 
+// expected payload for poke paths endpoint
 export interface ServerPathResponse {
   moves: string[];
 }
 
+// expected error when we have an impossibe path
 export interface ErrorResponse {
   message: string;
 }
@@ -41,16 +46,19 @@ export interface PokePathPostBody {
   endingLoc: Coordinate;
 }
 
+// sets our initial state for the grid
 const initialGridState = (size: number): TileProps[][] => {
   return Array(size).fill(
     Array(size).fill({ value: TileEnum.GRASS, isPath: false })
   );
 };
 
+// slightly less wordy function to make a deep copy of the grid
 const copyGrid = (field: TileProps[][]): TileProps[][] => {
   return JSON.parse(JSON.stringify(field));
 };
 
+// will change the isPath properties of every tile to be false
 const resetPath = (field: TileProps[][]): TileProps[][] => {
   const fieldCopy = copyGrid(field);
   fieldCopy.forEach((row) => {
@@ -61,6 +69,7 @@ const resetPath = (field: TileProps[][]): TileProps[][] => {
   return fieldCopy;
 };
 
+// will take a grid, a starting position and a set of moves and returns a new grid where the isPath properties are field accordingly.
 const applyMoves = (
   field: TileProps[][],
   startingPosition: Coordinate,
@@ -88,6 +97,7 @@ const applyMoves = (
   return newField;
 };
 
+// this takes in a grid and an one of the TileEnums and will search through and return all matching entry coordiantes or will return an empty array.
 const findAllCoordinatesByTileType = (
   field: TileProps[][],
   type: TileEnum
@@ -103,6 +113,7 @@ const findAllCoordinatesByTileType = (
   return coordinates;
 };
 
+// for validation we check to see if we have less than or more than 1 starting location and ending location.
 const handleGridValidation = (grid: TileProps[][]): string[] => {
   const startingLocations = findAllCoordinatesByTileType(grid, TileEnum.START);
   const endingLocations = findAllCoordinatesByTileType(grid, TileEnum.END);
@@ -129,53 +140,49 @@ const App = () => {
     initialGridState(gridSize)
   );
 
+  // reset's the grid whenever the gridsize property is updated and clear's out errors
   useEffect(() => {
     setGrid(initialGridState(gridSize));
     setErrors([]);
   }, [gridSize]);
 
-  const memoizedHandleTileClick = useCallback(
-    (xPosition: number, yPosition: number) => {
-      setErrors([]);
-      setGrid((originalGrid) => {
-        const newGrid: TileProps[][] = resetPath(originalGrid);
-        const enumLength: number = Object.keys(TileEnum).length / 2;
-        const currentTile: TileProps = newGrid[xPosition][yPosition];
-        const tileValue = (currentTile.value + 1) % enumLength;
-        newGrid[xPosition][yPosition].value = tileValue;
-        return newGrid;
-      });
-    },
-    [setGrid, setErrors]
-  );
+  // when the grid is inerfaced we blow away errors and set the grid based on the selection
+  const handleTileClick = (xPosition: number, yPosition: number) => {
+    setErrors([]);
+    setGrid((originalGrid) => {
+      const newGrid: TileProps[][] = resetPath(originalGrid);
+      const enumLength: number = Object.keys(TileEnum).length / 2;
+      const currentTile: TileProps = newGrid[xPosition][yPosition];
+      const tileValue = (currentTile.value + 1) % enumLength;
+      newGrid[xPosition][yPosition].value = tileValue;
+      return newGrid;
+    });
+  };
 
   const handleSubmit = async () => {
     const validationErrors = handleGridValidation(grid);
-
     if (validationErrors.length) {
       setErrors(validationErrors);
       return;
     }
-    const startingLoc = findAllCoordinatesByTileType(grid, TileEnum.START)?.[0];
-    const endingLoc = findAllCoordinatesByTileType(grid, TileEnum.END)?.[0];
-    const impassables = findAllCoordinatesByTileType(grid, TileEnum.OBSTACLE);
 
     const postBody: PokePathPostBody = {
       sideLength: gridSize,
-      startingLoc,
-      endingLoc,
-      impassables,
+      startingLoc: findAllCoordinatesByTileType(grid, TileEnum.START)?.[0],
+      endingLoc: findAllCoordinatesByTileType(grid, TileEnum.END)?.[0],
+      impassables: findAllCoordinatesByTileType(grid, TileEnum.OBSTACLE),
     };
 
     const results: ServerPathResponse | ErrorResponse = await fetchPath(
       postBody
     );
+    // type guard for error checking from server
     const errorResponse = results as ErrorResponse;
     const successResponse = results as ServerPathResponse;
     if (errorResponse.message) {
       setErrors([errorResponse.message]);
     } else if (successResponse.moves) {
-      setGrid(applyMoves(grid, startingLoc, successResponse.moves));
+      setGrid(applyMoves(grid, postBody.startingLoc, successResponse.moves));
     }
   };
 
@@ -198,7 +205,7 @@ const App = () => {
         min={2}
         onChange={(e) => setGridSize(parseInt(e.target.value))}
       />
-      <Field grid={grid} click={memoizedHandleTileClick} />
+      <Field grid={grid} click={handleTileClick} />
       <button onClick={handleSubmit}>Start your adventure</button>
     </div>
   );
