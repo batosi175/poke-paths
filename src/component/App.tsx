@@ -47,40 +47,25 @@ const initialGridState = (size: number): TileProps[][] => {
   );
 };
 
-const createPostBody = (
+const findAllCoordinatesByTileType = (
   field: TileProps[][],
-  sideLength: number
-): PokePathPostBody => {
-  // console.log(field);
-  let impassables: Coordinate[] = [];
-  // TODO: Do soemthign about this
-  let startingLoc: Coordinate = { x: 0, y: 0 };
-  let endingLoc: Coordinate = { x: 0, y: 0 };
+  type: TileEnum
+): Coordinate[] => {
+  let coordinates: Coordinate[] = [];
   field.forEach((row, y) => {
     row.forEach((col, x) => {
-      switch (col.value) {
-        case TileEnum.START:
-          startingLoc = { x, y };
-          break;
-        case TileEnum.END:
-          endingLoc = { x, y };
-          break;
-        case TileEnum.OBSTACLE:
-          impassables.push({ x, y });
-          break;
+      if (col.value === type) {
+        coordinates.push({ x, y });
       }
     });
   });
-  return {
-    sideLength,
-    impassables,
-    startingLoc,
-    endingLoc,
-  };
+  return coordinates;
 };
 
 const App = () => {
   const [gridSize, setGridSize] = useState(3); // what we get from the input
+  const [errorList, setErrors] = useState([] as string[]); // array of error strings
+
   const memoizedSetGridSize = useCallback(
     // more efficient way of handling this
     (gridSize: string) => {
@@ -95,12 +80,13 @@ const App = () => {
   );
 
   useEffect(() => {
-    // console.log("effect getting called");
     setGrid(initialGridState(gridSize));
+    setErrors([]);
   }, [gridSize]);
 
   const memoizedHandleTileClick = useCallback(
     (xPosition: number, yPosition: number) => {
+      setErrors([]);
       setGrid((originalGrid) => {
         const gridCopy: TileProps[][] = JSON.parse(
           JSON.stringify(originalGrid)
@@ -118,20 +104,28 @@ const App = () => {
         return gridCopy;
       });
     },
-    [setGrid]
+    [setGrid, setErrors]
   );
 
   const handleSubmit = async () => {
-    const postBody = createPostBody(grid, gridSize);
+    const startingLoc = findAllCoordinatesByTileType(grid, TileEnum.START)?.[0];
+    const endingLoc = findAllCoordinatesByTileType(grid, TileEnum.END)?.[0];
+    const impassables = findAllCoordinatesByTileType(grid, TileEnum.OBSTACLE);
+
+    const postBody: PokePathPostBody = {
+      sideLength: gridSize,
+      startingLoc,
+      endingLoc,
+      impassables,
+    };
+
     const results: ServerPathResponse | ErrorResponse = await fetchPath(
       postBody
     );
-
     const errorResponse = results as ErrorResponse;
     const successResponse = results as ServerPathResponse;
-
     if (errorResponse.message) {
-      console.log(errorResponse.message);
+      setErrors([errorResponse.message]);
     } else if (successResponse.moves) {
       const position = { ...postBody.startingLoc };
       const gridCopy: TileProps[][] = JSON.parse(JSON.stringify(grid));
@@ -151,7 +145,6 @@ const App = () => {
             position.x++;
             break;
         }
-
         gridCopy[position.y][position.x].isPath = true;
       });
       setGrid(gridCopy);
@@ -160,6 +153,15 @@ const App = () => {
 
   return (
     <div className="App">
+      <div className="errorList">
+        {errorList.map((error, index) => {
+          return (
+            <div className="errorItem" key={index}>
+              {error}
+            </div>
+          );
+        })}
+      </div>
       <input
         type="number"
         name="gridSizeInput"
