@@ -62,6 +62,25 @@ const findAllCoordinatesByTileType = (
   return coordinates;
 };
 
+const handleGridValidation = (grid: TileProps[][]): string[] => {
+  const startingLocations = findAllCoordinatesByTileType(grid, TileEnum.START);
+  const endingLocations = findAllCoordinatesByTileType(grid, TileEnum.END);
+
+  const messageList: string[] = [];
+
+  if (startingLocations.length === 0) {
+    messageList.push("You need at least one starting tile");
+  } else if (startingLocations.length > 1) {
+    messageList.push("You may only have up to one starting tile");
+  }
+  if (endingLocations.length === 0) {
+    messageList.push("You need at least one ending tile");
+  } else if (endingLocations.length > 1) {
+    messageList.push("You may only have up to one ending tile");
+  }
+  return messageList;
+};
+
 const App = () => {
   const [gridSize, setGridSize] = useState(3); // what we get from the input
   const [errorList, setErrors] = useState([] as string[]); // array of error strings
@@ -108,6 +127,12 @@ const App = () => {
   );
 
   const handleSubmit = async () => {
+    const validationErrors = handleGridValidation(grid);
+
+    if (validationErrors.length) {
+      setErrors(validationErrors);
+      return;
+    }
     const startingLoc = findAllCoordinatesByTileType(grid, TileEnum.START)?.[0];
     const endingLoc = findAllCoordinatesByTileType(grid, TileEnum.END)?.[0];
     const impassables = findAllCoordinatesByTileType(grid, TileEnum.OBSTACLE);
