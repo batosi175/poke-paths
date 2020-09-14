@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import "./App.css";
+// import "./App.css";
 import Field from "./Field";
 import { fetchPath } from "../api/PokePathsRepository";
 import { InputWithButton } from "./InputWithButton";
-import { Button } from "@material-ui/core";
+import { Button, Grid } from "@material-ui/core";
 import { ErrorBanner } from "./ErrorBanner";
 
 // enum that manages what the tile values are
@@ -201,15 +201,20 @@ const App = () => {
   };
 
   return (
-    <div className="App">
-      <InputWithButton setGridSize={setGridSize} />
-      <Field grid={grid} click={handleTileClick} />
-      <Button onClick={handleSubmit} variant="outlined" color="primary">
-        Start your adventure
-      </Button>
-
-      <ErrorBanner errors={errorList} clearErrors={clearErrors} />
-    </div>
+    <Grid container>
+      <Grid item xs={12} md={6} container direction="column" justify="center">
+        <InputWithButton setGridSize={setGridSize} />
+        <Field grid={grid} click={handleTileClick} />
+      </Grid>
+      <Grid item xs={12} md={6} container direction="column" justify="center">
+        <Button onClick={handleSubmit} variant="outlined" color="primary">
+          Start your adventure
+        </Button>
+      </Grid>
+      <Grid item xs={12}>
+        <ErrorBanner errors={errorList} clearErrors={clearErrors} />
+      </Grid>
+    </Grid>
   );
 };
 

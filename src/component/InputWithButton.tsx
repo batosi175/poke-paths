@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, TextField, Box } from "@material-ui/core";
+import { Button, TextField, Grid } from "@material-ui/core";
 
 interface inputProps {
   setGridSize: Function;
@@ -17,7 +17,7 @@ export const InputWithButton = ({ setGridSize }: inputProps) => {
   const [input, setInput] = useState(3);
 
   return (
-    <Box>
+    <Grid container justify="center">
       <TextField
         variant="outlined"
         color="primary"
@@ -36,6 +36,6 @@ export const InputWithButton = ({ setGridSize }: inputProps) => {
       >
         Set Size
       </Button>
-    </Box>
+    </Grid>
   );
 };
