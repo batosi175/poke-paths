@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import "./App.css";
 import Field from "./Field";
 import { fetchPath } from "../api/PokePathsRepository";
@@ -11,7 +11,7 @@ export enum TileEnum {
   "END",
 }
 
-// The props that are sent down to the grid and the tile component is array indexed starting from top left to bottom right. ie [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+// The props that are sent down to the grid and the tile component is array indexed starting from top left to bottom right.
 export interface TileProps {
   value: TileEnum;
   isPath: boolean;
@@ -19,10 +19,10 @@ export interface TileProps {
 
 // possible moves that come from the server
 export enum MoveEnum {
-  "D",
-  "U",
-  "R",
-  "L",
+  "D", // Down
+  "U", // Up
+  "R", // Right
+  "L", // Left
 }
 
 // expected payload for poke paths endpoint
@@ -47,6 +47,11 @@ export interface PokePathPostBody {
 }
 
 // sets our initial state for the grid
+// ex:[
+//   [{value: 0, isPath:false}, {value: 0, isPath:false}, {value: 0, isPath:false}],
+//   [{value: 0, isPath:false}, {value: 0, isPath:false}, {value: 0, isPath:false}],
+//   [{value: 0, isPath:false}, {value: 0, isPath:false}, {value: 0, isPath:false}]
+// ]
 const initialGridState = (size: number): TileProps[][] => {
   return Array(size).fill(
     Array(size).fill({ value: TileEnum.GRASS, isPath: false })
@@ -69,7 +74,7 @@ const resetPath = (field: TileProps[][]): TileProps[][] => {
   return fieldCopy;
 };
 
-// will take a grid, a starting position and a set of moves and returns a new grid where the isPath properties are field accordingly.
+// will take a grid, a starting position and a set of moves and returns a new grid where the isPath property is set to true if is on the route that comes from the api
 const applyMoves = (
   field: TileProps[][],
   startingPosition: Coordinate,
@@ -77,27 +82,28 @@ const applyMoves = (
 ): TileProps[][] => {
   const newField: TileProps[][] = copyGrid(field);
   newField[startingPosition.y][startingPosition.x].isPath = true;
+  let currentPosition: Coordinate = { ...startingPosition };
   moves.forEach((move: string) => {
     switch (move) {
-      case MoveEnum[MoveEnum.U]:
-        startingPosition.y--;
+      case MoveEnum.U.toString():
+        currentPosition.y--;
         break;
-      case MoveEnum[MoveEnum.D]:
-        startingPosition.y++;
+      case MoveEnum.D.toString():
+        currentPosition.y++;
         break;
-      case MoveEnum[MoveEnum.L]:
-        startingPosition.x--;
+      case MoveEnum.L.toString():
+        currentPosition.x--;
         break;
-      case MoveEnum[MoveEnum.R]:
-        startingPosition.x++;
+      case MoveEnum.R.toString():
+        currentPosition.x++;
         break;
     }
-    newField[startingPosition.y][startingPosition.x].isPath = true;
+    newField[currentPosition.y][currentPosition.x].isPath = true;
   });
   return newField;
 };
 
-// this takes in a grid and an one of the TileEnums and will search through and return all matching entry coordiantes or will return an empty array.
+// this takes in a grid and one of the TileEnums, and will search through the grid and return all matching entries coordiantes or will return an empty array.
 const findAllCoordinatesByTileType = (
   field: TileProps[][],
   type: TileEnum
@@ -146,7 +152,7 @@ const App = () => {
     setErrors([]);
   }, [gridSize]);
 
-  // when the grid is inerfaced we blow away errors and set the grid based on the selection
+  // when the grid is interacted with, we clear errors and set the grid based on the selection
   const handleTileClick = (xPosition: number, yPosition: number) => {
     setErrors([]);
     setGrid((originalGrid) => {
