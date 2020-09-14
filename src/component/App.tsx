@@ -84,17 +84,18 @@ const applyMoves = (
   newField[startingPosition.y][startingPosition.x].isPath = true;
   let currentPosition: Coordinate = { ...startingPosition };
   moves.forEach((move: string) => {
+    // using string values instead of enum values for ledgibility
     switch (move) {
-      case MoveEnum.U.toString():
+      case "U":
         currentPosition.y--;
         break;
-      case MoveEnum.D.toString():
+      case "D":
         currentPosition.y++;
         break;
-      case MoveEnum.L.toString():
+      case "L":
         currentPosition.x--;
         break;
-      case MoveEnum.R.toString():
+      case "R":
         currentPosition.x++;
         break;
     }
