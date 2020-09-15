@@ -37,7 +37,11 @@ export const ErrorBanner = React.memo(({ errors, clearErrors }: inputProps) => {
     );
   });
   return (
-    <Snackbar open={errors.length > 0} className={classes.snackBar}>
+    <Snackbar
+      open={errors.length > 0}
+      className={classes.snackBar}
+      anchorOrigin={{ vertical: "top", horizontal: "center" }}
+    >
       <Alert
         variant="outlined"
         severity="error"
