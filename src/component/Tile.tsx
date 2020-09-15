@@ -1,6 +1,7 @@
 import React, { memo } from "react";
 import { TileProps } from "../model/Models";
 import { TileEnum } from "../model/Enums";
+import { makeStyles, createStyles } from "@material-ui/core";
 const bulbasaur = "bulbasaur.png";
 const finishTile = "finishtile.png";
 const grassTile = "grasstile.png";
@@ -9,7 +10,23 @@ const rockTile = "rocktile.png";
 interface InputProps {
   tile: TileProps;
   click: Function;
+  clickable?: boolean;
 }
+
+const useStyles = makeStyles(() =>
+  createStyles({
+    tileImage: {
+      backgroundColor: "green",
+      border: "solid 5px black",
+    },
+    active: {
+      border: "solid 5px yellow",
+    },
+    clickable: {
+      cursor: "pointer",
+    },
+  })
+);
 
 const getImage = (tile: TileEnum) => {
   switch (tile) {
@@ -24,16 +41,20 @@ const getImage = (tile: TileEnum) => {
   }
 };
 
-const Tile = memo(({ tile, click }: InputProps) => {
+const Tile = memo(({ tile, click, clickable = true }: InputProps) => {
+  const classes = useStyles();
+  const getClass = (isPath: boolean, isClickable: boolean) => {
+    const finalClass = [];
+    finalClass.push(classes.tileImage);
+    isPath && finalClass.push(classes.active);
+    isClickable && finalClass.push(classes.clickable);
+    return finalClass.join(" ");
+  };
   return (
     <img
       src={getImage(tile.value)}
       alt={TileEnum[tile.value]}
-      style={{
-        border: tile.isPath ? "solid 5px yellow" : "solid 5px black",
-        backgroundColor: TileEnum[tile.value] === "START" ? "green" : "",
-      }}
-      className="tile"
+      className={getClass(tile.isPath, clickable)}
       onClick={() => click()}
     />
   );
