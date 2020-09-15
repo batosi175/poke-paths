@@ -22,25 +22,23 @@ import { InfoPanel } from "./InfoPanel";
 
 const useStyles = makeStyles(() =>
   createStyles({
-    root: {
-      paddingTop: "25px",
-    },
     sidebar: {
       position: "fixed",
       width: "300px",
       height: "100%",
+      overflowY: "auto",
+      paddingTop: "15px",
     },
     gridArea: {
+      display: "flex",
       marginLeft: "300px",
+      paddingTop: "15px",
     },
     paper: {
       backgroundColor: "#fff",
       padding: "15px",
       margin: "15px",
       marginTop: "0px",
-    },
-    flex: {
-      display: "flex",
     },
   })
 );
@@ -119,7 +117,7 @@ const App = () => {
   };
 
   return (
-    <div className={classes.root}>
+    <div>
       <div className={classes.sidebar}>
         <Paper className={classes.paper} elevation={2}>
           <InfoPanel />
@@ -132,7 +130,7 @@ const App = () => {
           />
         </Paper>
       </div>
-      <Grid className={[classes.gridArea, classes.flex].join(" ")}>
+      <Grid className={classes.gridArea}>
         <Paper className={classes.paper} elevation={2}>
           <Field grid={grid} click={handleTileClick} />
         </Paper>

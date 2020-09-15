@@ -21,19 +21,12 @@ interface ButtonProps {
 const useStyles = makeStyles(() =>
   createStyles({
     outerGrid: {
-      paddingLeft: "10px",
+      paddingTop: "5px",
     },
     input: {
       marginBottom: "5px",
       flex: "1 1 auto",
-      marginRight: "5px",
     },
-    // textbox: {
-    //   flexGrow: 2,
-    // },
-    // submit: {
-    //   flex: "1  1 auto",
-    // },
   })
 );
 

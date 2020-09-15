@@ -46,7 +46,7 @@ const instructionContent = [
 // this is not making use of makeStyles, so i can keep it outside the component
 const getInstructionContent = (instructionContent: string, index: number) => {
   return (
-    <Typography variant="body1" align="center" key={"text" + index}>
+    <Typography variant="body2" align="center" key={"text" + index}>
       {instructionContent}
     </Typography>
   );
