@@ -1,4 +1,4 @@
-import { TileProps, Coordinate } from "../model/Models";
+import { TileProp, Coordinate } from "../model/Models";
 import { TileEnum } from "../model/Enums";
 
 // sets our initial state for the grid
@@ -7,19 +7,19 @@ import { TileEnum } from "../model/Enums";
 //   [{value: 0, isPath:false}, {value: 0, isPath:false}, {value: 0, isPath:false}],
 //   [{value: 0, isPath:false}, {value: 0, isPath:false}, {value: 0, isPath:false}]
 // ]
-export const initialGridState = (size: number): TileProps[][] => {
+export const initialGridState = (size: number): TileProp[][] => {
   return Array(size).fill(
     Array(size).fill({ value: TileEnum.GRASS, isPath: false })
   );
 };
 
 // slightly less wordy function to make a deep copy of the grid
-export const copyGrid = (field: TileProps[][]): TileProps[][] => {
+export const copyGrid = (field: TileProp[][]): TileProp[][] => {
   return JSON.parse(JSON.stringify(field));
 };
 
 // will change the isPath properties of every tile to be false
-export const resetPath = (field: TileProps[][]): TileProps[][] => {
+export const resetPath = (field: TileProp[][]): TileProp[][] => {
   const fieldCopy = copyGrid(field);
   fieldCopy.forEach((row) => {
     row.forEach((col) => {
@@ -31,11 +31,11 @@ export const resetPath = (field: TileProps[][]): TileProps[][] => {
 
 // will take a grid, a starting position and a set of moves and returns a new grid where the isPath property is set to true if is on the route that comes from the api
 export const applyMoves = (
-  field: TileProps[][],
+  field: TileProp[][],
   startingPosition: Coordinate,
   moves: string[]
-): TileProps[][] => {
-  const newField: TileProps[][] = copyGrid(field);
+): TileProp[][] => {
+  const newField: TileProp[][] = copyGrid(field);
   newField[startingPosition.y][startingPosition.x].isPath = true;
   let currentPosition: Coordinate = { ...startingPosition };
   moves.forEach((move: string) => {
@@ -61,7 +61,7 @@ export const applyMoves = (
 
 // this takes in a grid and one of the TileEnums, and will search through the grid and return all matching entries coordiantes or will return an empty array.
 export const findAllCoordinatesByTileType = (
-  field: TileProps[][],
+  field: TileProp[][],
   type: TileEnum
 ): Coordinate[] => {
   let coordinates: Coordinate[] = [];
@@ -76,7 +76,7 @@ export const findAllCoordinatesByTileType = (
 };
 
 // for validation we check to see if we have less than or more than 1 starting location and ending location.
-export const handleGridValidation = (grid: TileProps[][]): string[] => {
+export const handleGridValidation = (grid: TileProp[][]): string[] => {
   const startingLocations = findAllCoordinatesByTileType(grid, TileEnum.START);
   const endingLocations = findAllCoordinatesByTileType(grid, TileEnum.END);
 

@@ -1,19 +1,13 @@
 import React from "react";
-import {
-  Snackbar,
-  Button,
-  makeStyles,
-  Theme,
-  createStyles,
-} from "@material-ui/core";
+import { Snackbar, Button, makeStyles, createStyles } from "@material-ui/core";
 import { Alert, AlertTitle } from "@material-ui/lab";
 
-interface inputProps {
+interface InputProps {
   errors: string[];
   clearErrors: Function;
 }
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     snackBar: {
       backgroundColor: "#fff",
@@ -27,7 +21,11 @@ const useStyles = makeStyles((theme: Theme) =>
   })
 );
 
-export const ErrorBanner = React.memo(({ errors, clearErrors }: inputProps) => {
+// this component will stay hidden if there are no errors supplied.
+// we use material ui's snackbar with an alert within it to get an error alert banner
+// errors object ex: ["error1", "errro2"]
+// if we click the "clear button" use use the clearErrors prop and flush out the array
+export const ErrorBanner = React.memo(({ errors, clearErrors }: InputProps) => {
   const classes = useStyles();
   const errorList = errors.map((error, index) => {
     return (

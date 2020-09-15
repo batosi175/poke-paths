@@ -1,7 +1,7 @@
 import { TileEnum } from "./Enums";
 
 // The props that are sent down to the grid and the tile component is array indexed starting from top left to bottom right.
-export interface TileProps {
+export interface TileProp {
   value: TileEnum;
   isPath: boolean;
 }

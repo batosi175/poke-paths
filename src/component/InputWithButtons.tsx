@@ -7,48 +7,83 @@ import {
   createStyles,
 } from "@material-ui/core";
 
-interface inputProps {
+interface InputProps {
   setGridSize: Function;
   clearGrid: Function;
   findPath: Function;
 }
 
+interface ButtonProps {
+  label: string;
+  action: Function;
+}
+
 const useStyles = makeStyles(() =>
   createStyles({
     outerGrid: {
-      paddingLeft: "5px",
+      paddingLeft: "10px",
     },
     input: {
       marginBottom: "5px",
       flex: "1 1 auto",
       marginRight: "5px",
     },
-    textbox: {
-      flexGrow: 2,
-    },
-    submit: {
-      flex: "1  1 100%",
-    },
+    // textbox: {
+    //   flexGrow: 2,
+    // },
+    // submit: {
+    //   flex: "1  1 auto",
+    // },
   })
 );
 
+// this component bubbles up multiple actions.
+// It will send up the grid size in the text input whenever we choose to set it (either with the 'set grid' button or by pressing enter)
+// It will send an action to clear the grid to all grass tiles
+// It will also send an action that will cause us to contact the api and find a path
 export const InputWithButtons = ({
   setGridSize,
   clearGrid,
   findPath,
-}: inputProps) => {
+}: InputProps) => {
   const classes = useStyles();
   const [input, setInput] = useState(3);
 
+  // transforms the input value and set's it to a number in the local state
   const handleSetInput = (inputValue: string) => {
     const parsedValue: number = parseInt(inputValue);
     setInput(parsedValue);
   };
 
+  // makes the way we interact with buttons consistent so we can pass the actions as props to the mapping function
+  const handleSetGridSize = () => {
+    setGridSize(input);
+  };
+
+  const buttons: ButtonProps[] = [
+    { label: "Set Size", action: handleSetGridSize },
+    { label: "Clear Grid", action: clearGrid },
+    { label: "Find Path", action: findPath },
+  ];
+
+  const getButton = (button: ButtonProps) => {
+    return (
+      <Button
+        key={button.label}
+        className={classes.input}
+        variant="outlined"
+        color="primary"
+        onClick={() => button.action()}
+      >
+        {button.label}
+      </Button>
+    );
+  };
+
   return (
     <Grid container justify="center" className={classes.outerGrid}>
       <TextField
-        className={[classes.input, classes.textbox].join(" ")}
+        className={classes.input}
         variant="outlined"
         color="primary"
         type="number"
@@ -57,31 +92,9 @@ export const InputWithButtons = ({
         value={input}
         size="small"
         onChange={(e) => handleSetInput(e.target.value)}
+        onKeyUp={(e) => e.keyCode === 13 && handleSetGridSize()}
       />
-      <Button
-        className={classes.input}
-        variant="outlined"
-        color="primary"
-        onClick={() => setGridSize(input)}
-      >
-        Set Size
-      </Button>
-      <Button
-        className={classes.input}
-        variant="outlined"
-        color="primary"
-        onClick={() => clearGrid()}
-      >
-        Clear Grid
-      </Button>
-      <Button
-        className={[classes.input, classes.submit].join(" ")}
-        variant="outlined"
-        color="primary"
-        onClick={() => findPath()}
-      >
-        Find Path
-      </Button>
+      {buttons.map((button) => getButton(button))}
     </Grid>
   );
 };

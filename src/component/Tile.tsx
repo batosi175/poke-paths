@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import { TileProps } from "../model/Models";
+import { TileProp } from "../model/Models";
 import { TileEnum } from "../model/Enums";
 import { makeStyles, createStyles } from "@material-ui/core";
 const bulbasaur = "bulbasaur.png";
@@ -8,7 +8,7 @@ const grassTile = "grasstile.png";
 const rockTile = "rocktile.png";
 
 interface InputProps {
-  tile: TileProps;
+  tile: TileProp;
   click: Function;
   clickable?: boolean;
 }

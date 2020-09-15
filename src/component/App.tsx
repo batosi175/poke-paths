@@ -5,7 +5,7 @@ import { InputWithButtons } from "./InputWithButtons";
 import { Grid, makeStyles, createStyles, Paper } from "@material-ui/core";
 import { ErrorBanner } from "./ErrorBanner";
 import {
-  TileProps,
+  TileProp,
   PokePathPostBody,
   ServerPathResponse,
   ErrorResponse,
@@ -49,7 +49,7 @@ const App = () => {
   const classes = useStyles();
   const [gridSize, setGridSize] = useState(3);
   const [errorList, setErrors] = useState([] as string[]);
-  const [grid, setGrid] = useState<TileProps[][]>(() =>
+  const [grid, setGrid] = useState<TileProp[][]>(() =>
     initialGridState(gridSize)
   );
 
@@ -67,15 +67,16 @@ const App = () => {
   const handleTileClick = (xPosition: number, yPosition: number) => {
     clearErrors();
     setGrid((originalGrid) => {
-      const newGrid: TileProps[][] = resetPath(originalGrid);
+      const newGrid: TileProp[][] = resetPath(originalGrid);
       const enumLength: number = Object.keys(TileEnum).length / 2;
-      const currentTile: TileProps = newGrid[xPosition][yPosition];
+      const currentTile: TileProp = newGrid[xPosition][yPosition];
       const tileValue = (currentTile.value + 1) % enumLength;
       newGrid[xPosition][yPosition].value = tileValue;
       return newGrid;
     });
   };
 
+  // we get a size from the input and buttons component and if we get a value less than 2 for the size, we send an erro out instead
   const handleSetGridSize = (value: number) => {
     if (value >= 2) {
       setGridSize(value);
@@ -84,10 +85,12 @@ const App = () => {
     }
   };
 
+  // quick way to clear the grid to the initial state for the current size
   const handleClearGrid = () => {
     setGrid(initialGridState(gridSize));
   };
 
+  // we make this async for ledgibilty, since we get properties from an api
   const handleSubmit = async () => {
     const validationErrors = handleGridValidation(grid);
     if (validationErrors.length) {
@@ -105,7 +108,7 @@ const App = () => {
     const results: ServerPathResponse | ErrorResponse = await fetchPath(
       postBody
     );
-    // type guard for error checking from server
+    // type guard for error checking from server so we can handle errors
     const errorResponse = results as ErrorResponse;
     const successResponse = results as ServerPathResponse;
     if (errorResponse.message) {
