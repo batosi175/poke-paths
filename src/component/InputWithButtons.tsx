@@ -40,12 +40,17 @@ export const InputWithButtons = ({
   findPath,
 }: InputProps) => {
   const classes = useStyles();
-  const [input, setInput] = useState(3);
+  // we type it to either a number or empty string so that we can avoid having errors when the user clears the box or begins to type a negative number
+  const [input, setInput] = useState<number | "">(3);
 
-  // transforms the input value and set's it to a number in the local state
+  // transforms the input value and set's it to a number or empty string in the local state
   const handleSetInput = (inputValue: string) => {
     const parsedValue: number = parseInt(inputValue);
-    setInput(parsedValue);
+    if (isNaN(parsedValue)) {
+      setInput("");
+    } else {
+      setInput(parsedValue);
+    }
   };
 
   // makes the way we interact with buttons consistent so we can pass the actions as props to the mapping function
