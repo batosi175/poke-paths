@@ -6,7 +6,7 @@ In Poke Paths we want to help pokemon find their way home. You can do so by usin
 
 I made this application using `create-react-app` and typescript `--template typescript`.
 
-Since the `find-path` endpoint is hosted on heroku,it may take a minute to see results on a cold start because I did not add a loading state.
+It may take a minute to see results on a cold start since the `find-path` endpoint is hosted on Heroku and I did ont add a loading state.
 
 I used Material-ui because it's a solution that comes with a lot of good styling out of the box
 
@@ -28,4 +28,4 @@ You will also see any lint errors in the console.
 
 ### Additional libraries
 
-Material-ui: It's a ui library with several components and styling options
+[Material-ui](https://material-ui.com/): Is a ui library with several components and styling options
