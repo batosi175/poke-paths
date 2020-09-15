@@ -1,6 +1,6 @@
 import React, { memo } from "react";
 import Tile from "./Tile";
-import { TileProps } from "./App";
+import { TileProps } from "../model/Models";
 
 interface InputProps {
   grid: TileProps[][];

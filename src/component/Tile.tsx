@@ -1,5 +1,6 @@
 import React, { memo } from "react";
-import { TileEnum, TileProps } from "./App";
+import { TileProps } from "../model/Models";
+import { TileEnum } from "../model/Enums";
 const bulbasaur = "bulbasaur.png";
 const finishTile = "finishtile.png";
 const grassTile = "grasstile.png";

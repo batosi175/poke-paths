@@ -1,8 +1,8 @@
 import {
-  PokePathPostBody,
   ServerPathResponse,
   ErrorResponse,
-} from "../component/App";
+  PokePathPostBody,
+} from "../model/Models";
 
 const url = "https://frozen-reef-96768.herokuapp.com/find-path";
 

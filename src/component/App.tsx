@@ -10,49 +10,14 @@ import {
   Paper,
 } from "@material-ui/core";
 import { ErrorBanner } from "./ErrorBanner";
-
-// enum that manages what the tile values are
-export enum TileEnum {
-  "GRASS",
-  "OBSTACLE",
-  "START",
-  "END",
-}
-
-// The props that are sent down to the grid and the tile component is array indexed starting from top left to bottom right.
-export interface TileProps {
-  value: TileEnum;
-  isPath: boolean;
-}
-
-// possible moves that come from the server
-export enum MoveEnum {
-  "D", // Down
-  "U", // Up
-  "R", // Right
-  "L", // Left
-}
-
-// expected payload for poke paths endpoint
-export interface ServerPathResponse {
-  moves: string[];
-}
-
-// expected error when we have an impossibe path
-export interface ErrorResponse {
-  message: string;
-}
-
-export interface Coordinate {
-  x: number;
-  y: number;
-}
-export interface PokePathPostBody {
-  sideLength: number;
-  impassables: Coordinate[];
-  startingLoc: Coordinate;
-  endingLoc: Coordinate;
-}
+import {
+  TileProps,
+  Coordinate,
+  PokePathPostBody,
+  ServerPathResponse,
+  ErrorResponse,
+} from "../model/Models";
+import { TileEnum } from "../model/Enums";
 
 // sets our initial state for the grid
 // ex:[
