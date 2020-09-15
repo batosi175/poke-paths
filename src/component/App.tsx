@@ -23,7 +23,15 @@ import { InfoPanel } from "./InfoPanel";
 const useStyles = makeStyles(() =>
   createStyles({
     root: {
-      paddingTop: "50px",
+      paddingTop: "25px",
+    },
+    sidebar: {
+      position: "fixed",
+      width: "300px",
+      height: "100%",
+    },
+    gridArea: {
+      marginLeft: "300px",
     },
     paper: {
       backgroundColor: "#fff",
@@ -31,20 +39,8 @@ const useStyles = makeStyles(() =>
       margin: "15px",
       marginTop: "0px",
     },
-    centered: {
-      textAlign: "center",
-    },
-    outerGridItem: {
-      flex: "1 0 200px",
-      flexDirection: "column",
-      justifyContent: "center",
-    },
-    submitButton: {
-      flex: "1 0 auto",
-    },
-    fullWidthGridItem: {
-      flexDirection: "column",
-      justifyContent: "center",
+    flex: {
+      display: "flex",
     },
   })
 );
@@ -120,21 +116,11 @@ const App = () => {
   };
 
   return (
-    <Grid container className={classes.root} spacing={1} justify="space-around">
-      <Grid item className={classes.fullWidthGridItem} container>
+    <div className={classes.root}>
+      <div className={classes.sidebar}>
         <Paper className={classes.paper} elevation={2}>
           <InfoPanel />
         </Paper>
-      </Grid>
-      <Grid item className={classes.outerGridItem} container>
-        <Paper className={classes.paper} elevation={2}>
-          <Field grid={grid} click={handleTileClick} />
-        </Paper>
-      </Grid>
-      <Grid item className={classes.outerGridItem} container>
-        {/* <Paper className={classes.paper} elevation={2}>
-          <TileSelector />
-        </Paper> */}
         <Paper className={classes.paper} elevation={2}>
           <InputWithButtons
             setGridSize={handleSetGridSize}
@@ -142,23 +128,14 @@ const App = () => {
             findPath={handleSubmit}
           />
         </Paper>
-
-        {/* <Paper
-          className={[classes.paper, classes.centered].join(" ")}
-          elevation={2}
-        >
-          <Button
-            className={classes.submitButton}
-            onClick={handleSubmit}
-            variant="outlined"
-            color="primary"
-          >
-            Find Path
-          </Button>
-        </Paper> */}
+      </div>
+      <Grid className={[classes.gridArea, classes.flex].join(" ")}>
+        <Paper className={classes.paper} elevation={2}>
+          <Field grid={grid} click={handleTileClick} />
+        </Paper>
       </Grid>
       <ErrorBanner errors={errorList} clearErrors={clearErrors} />
-    </Grid>
+    </div>
   );
 };
 
