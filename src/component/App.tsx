@@ -2,7 +2,13 @@ import React, { useState, useEffect } from "react";
 import Field from "./Field";
 import { fetchPath } from "../api/PokePathsRepository";
 import { InputWithButton } from "./InputWithButton";
-import { Button, Grid, makeStyles, createStyles } from "@material-ui/core";
+import {
+  Button,
+  Grid,
+  makeStyles,
+  createStyles,
+  Paper,
+} from "@material-ui/core";
 import { ErrorBanner } from "./ErrorBanner";
 
 // enum that manages what the tile values are
@@ -147,6 +153,23 @@ const useStyles = makeStyles(() =>
     root: {
       paddingTop: "50px",
     },
+    paper: {
+      backgroundColor: "#fff",
+      padding: "15px",
+      margin: "15px",
+      marginTop: "0px",
+    },
+    centered: {
+      textAlign: "center",
+    },
+    outerGridItem: {
+      flex: "1 0 200px",
+      flexDirection: "column",
+      justifyContent: "center",
+    },
+    submitButton: {
+      flex: "1 0 auto",
+    },
   })
 );
 
@@ -181,6 +204,14 @@ const App = () => {
     });
   };
 
+  const handleSetGridSize = (value: number) => {
+    if (value >= 2) {
+      setGridSize(value);
+    } else {
+      setErrors(["You need a minimum grid size of two"]);
+    }
+  };
+
   const handleSubmit = async () => {
     const validationErrors = handleGridValidation(grid);
     if (validationErrors.length) {
@@ -209,19 +240,31 @@ const App = () => {
   };
 
   return (
-    <Grid container className={classes.root} spacing={1}>
-      <Grid item xs={12} md={6} container direction="column" justify="center">
-        <InputWithButton setGridSize={setGridSize} />
-        <Field grid={grid} click={handleTileClick} />
+    <Grid container className={classes.root} spacing={1} justify="space-around">
+      <Grid item className={classes.outerGridItem} container>
+        <Paper className={classes.paper} elevation={2}>
+          <Field grid={grid} click={handleTileClick} />
+        </Paper>
       </Grid>
-      <Grid item xs={12} md={6} container direction="column" justify="center">
-        <Button onClick={handleSubmit} variant="outlined" color="primary">
-          Start your adventure
-        </Button>
+      <Grid item className={classes.outerGridItem} container>
+        <Paper className={classes.paper} elevation={2}>
+          <InputWithButton setGridSize={handleSetGridSize} />
+        </Paper>
+        <Paper
+          className={[classes.paper, classes.centered].join(" ")}
+          elevation={2}
+        >
+          <Button
+            className={classes.submitButton}
+            onClick={handleSubmit}
+            variant="outlined"
+            color="primary"
+          >
+            Start your adventure
+          </Button>
+        </Paper>
       </Grid>
-      <Grid item xs={12}>
-        <ErrorBanner errors={errorList} clearErrors={clearErrors} />
-      </Grid>
+      <ErrorBanner errors={errorList} clearErrors={clearErrors} />
     </Grid>
   );
 };

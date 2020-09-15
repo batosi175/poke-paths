@@ -15,6 +15,9 @@ interface inputProps {
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
+    snackBar: {
+      backgroundColor: "#fff",
+    },
     alertTitle: {
       textAlign: "left",
     },
@@ -34,7 +37,7 @@ export const ErrorBanner = React.memo(({ errors, clearErrors }: inputProps) => {
     );
   });
   return (
-    <Snackbar open={errors.length > 0}>
+    <Snackbar open={errors.length > 0} className={classes.snackBar}>
       <Alert
         variant="outlined"
         severity="error"
