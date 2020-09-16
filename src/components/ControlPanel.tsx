@@ -34,7 +34,7 @@ const useStyles = makeStyles(() =>
 // It will send up the grid size in the text input whenever we choose to set it (either with the 'set grid' button or by pressing enter)
 // It will send an action to clear the grid to all grass tiles
 // It will also send an action that will cause us to contact the api and find a path
-export const InputWithButtons = ({
+export const ControlPanel = ({
   setGridSize,
   clearGrid,
   findPath,

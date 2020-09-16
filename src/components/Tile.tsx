@@ -28,31 +28,28 @@ const useStyles = makeStyles(() =>
   })
 );
 
-const getImage = (tile: TileEnum) => {
-  switch (tile) {
-    case TileEnum.GRASS:
-      return process.env.PUBLIC_URL + grassTile;
-    case TileEnum.START:
-      return process.env.PUBLIC_URL + bulbasaur;
-    case TileEnum.END:
-      return process.env.PUBLIC_URL + finishTile;
-    case TileEnum.OBSTACLE:
-      return process.env.PUBLIC_URL + rockTile;
-  }
+// map of tile images
+const tileMap = {
+  [TileEnum.GRASS]: process.env.PUBLIC_URL + grassTile,
+  [TileEnum.START]: process.env.PUBLIC_URL + bulbasaur,
+  [TileEnum.END]: process.env.PUBLIC_URL + finishTile,
+  [TileEnum.OBSTACLE]: process.env.PUBLIC_URL + rockTile,
 };
 
 const Tile = memo(({ tile, click, clickable = true }: InputProps) => {
   const classes = useStyles();
+
   const getClass = (isPath: boolean, isClickable: boolean) => {
-    const finalClass = [];
-    finalClass.push(classes.tileImage);
-    isPath && finalClass.push(classes.active);
-    isClickable && finalClass.push(classes.clickable);
-    return finalClass.join(" ");
+    const classList = [];
+    classList.push(classes.tileImage);
+    isPath && classList.push(classes.active);
+    isClickable && classList.push(classes.clickable);
+    return classList.join(" ");
   };
+
   return (
     <img
-      src={getImage(tile.value)}
+      src={tileMap[tile.value]}
       alt={TileEnum[tile.value]}
       className={getClass(tile.isPath, clickable)}
       onClick={() => click()}

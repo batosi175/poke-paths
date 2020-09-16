@@ -27,24 +27,22 @@ const useStyles = makeStyles(() =>
 const Field = memo(({ grid, click }: InputProps) => {
   const classes = useStyles();
   return (
-    <div className="wrapper">
-      <div className={classes.fieldStyle}>
-        {grid.map((row: TileProp[], xPos) => {
-          return (
-            <div className={classes.rowStyle} key={xPos}>
-              {row.map((col: TileProp, yPos) => {
-                return (
-                  <Tile
-                    tile={col}
-                    key={[xPos, "-", yPos].join()}
-                    click={() => click(xPos, yPos)}
-                  />
-                );
-              })}
-            </div>
-          );
-        })}
-      </div>
+    <div className={classes.fieldStyle}>
+      {grid.map((row: TileProp[], xPos) => {
+        return (
+          <div className={classes.rowStyle} key={xPos}>
+            {row.map((col: TileProp, yPos) => {
+              return (
+                <Tile
+                  tile={col}
+                  key={[xPos, "-", yPos].join()}
+                  click={() => click(xPos, yPos)}
+                />
+              );
+            })}
+          </div>
+        );
+      })}
     </div>
   );
 });

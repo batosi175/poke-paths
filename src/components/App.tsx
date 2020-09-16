@@ -1,25 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Field from "./Field";
-import { fetchPath } from "../api/PokePathsRepository";
-import { InputWithButtons } from "./InputWithButtons";
+import { ControlPanel } from "./ControlPanel";
 import { Grid, makeStyles, createStyles, Paper } from "@material-ui/core";
 import { ErrorBanner } from "./ErrorBanner";
-import {
-  TileProp,
-  PokePathPostBody,
-  ServerPathResponse,
-  ErrorResponse,
-} from "../model/Models";
+import { TileProp } from "../model/Models";
 import { TileEnum } from "../model/Enums";
-import {
-  initialGridState,
-  resetPath,
-  handleGridValidation,
-  findAllCoordinatesByTileType,
-  applyMoves,
-} from "../Utils/AppUtils";
+import { initialGridState, resetPath } from "../Utils/AppUtils";
 import { InfoPanel } from "./InfoPanel";
+import { getPokePath } from "../api/PokePathsClient";
 
+// using JSS hook that came with Material-UI for styles
 const useStyles = makeStyles(() =>
   createStyles({
     sidebar: {
@@ -51,30 +41,34 @@ const App = () => {
     initialGridState(gridSize)
   );
 
+  const clearErrors = useCallback(() => {
+    setErrors([]);
+  }, [setErrors]);
+
   // reset's the grid whenever the gridsize property is updated and clear's out errors
   useEffect(() => {
     setGrid(initialGridState(gridSize));
     clearErrors();
-  }, [gridSize]);
-
-  const clearErrors = () => {
-    setErrors([]);
-  };
+  }, [gridSize, clearErrors]);
 
   // when the grid is interacted with, we clear errors and set the grid based on the selection
-  const handleTileClick = (xPosition: number, yPosition: number) => {
-    clearErrors();
-    setGrid((originalGrid) => {
-      const newGrid: TileProp[][] = resetPath(originalGrid);
-      const enumLength: number = Object.keys(TileEnum).length / 2;
-      const currentTile: TileProp = newGrid[xPosition][yPosition];
-      const tileValue = (currentTile.value + 1) % enumLength;
-      newGrid[xPosition][yPosition].value = tileValue;
-      return newGrid;
-    });
-  };
+  // we use useCallback to pass down a memoized function to prevent additional render when props change in the memoized Field and Tile components
+  const handleTileClick = useCallback(
+    (xPosition: number, yPosition: number) => {
+      clearErrors();
+      setGrid((originalGrid) => {
+        const newGrid: TileProp[][] = resetPath(originalGrid);
+        const enumLength: number = Object.keys(TileEnum).length / 2;
+        const currentTile: TileProp = newGrid[xPosition][yPosition];
+        const tileValue = (currentTile.value + 1) % enumLength;
+        newGrid[xPosition][yPosition].value = tileValue;
+        return newGrid;
+      });
+    },
+    [setGrid, clearErrors]
+  );
 
-  // we get a size from the input and buttons component and if we get a value less than 2 for the size, we send an erro out instead
+  // we get a size from the input and buttons component and if we get a value less than 2 for the size, we send an error out instead
   const handleSetGridSize = (value: number) => {
     if (value >= 2) {
       setGridSize(value);
@@ -88,42 +82,21 @@ const App = () => {
     setGrid(initialGridState(gridSize));
   };
 
-  // we make this async for ledgibilty, since we get properties from an api
+  // get path from api and set any validation or api errors
   const handleSubmit = async () => {
-    const validationErrors = handleGridValidation(grid);
-    if (validationErrors.length) {
-      setErrors(validationErrors);
-      return;
-    }
-
-    const postBody: PokePathPostBody = {
-      sideLength: gridSize,
-      startingLoc: findAllCoordinatesByTileType(grid, TileEnum.START)?.[0],
-      endingLoc: findAllCoordinatesByTileType(grid, TileEnum.END)?.[0],
-      impassables: findAllCoordinatesByTileType(grid, TileEnum.OBSTACLE),
-    };
-
-    const results: ServerPathResponse | ErrorResponse = await fetchPath(
-      postBody
-    );
-    // type guard for error checking from server so we can handle errors
-    const errorResponse = results as ErrorResponse;
-    const successResponse = results as ServerPathResponse;
-    if (errorResponse.message) {
-      setErrors([errorResponse.message]);
-    } else if (successResponse.moves) {
-      setGrid(applyMoves(grid, postBody.startingLoc, successResponse.moves));
-    }
+    const { errors: _errors, grid: _grid } = await getPokePath(grid, gridSize);
+    setErrors(_errors);
+    setGrid(_grid);
   };
 
   return (
-    <div>
+    <>
       <div className={classes.sidebar}>
         <Paper className={classes.paper} elevation={2}>
           <InfoPanel />
         </Paper>
         <Paper className={classes.paper} elevation={2}>
-          <InputWithButtons
+          <ControlPanel
             setGridSize={handleSetGridSize}
             clearGrid={handleClearGrid}
             findPath={handleSubmit}
@@ -136,7 +109,7 @@ const App = () => {
         </Paper>
       </Grid>
       <ErrorBanner errors={errorList} clearErrors={clearErrors} />
-    </div>
+    </>
   );
 };
 
